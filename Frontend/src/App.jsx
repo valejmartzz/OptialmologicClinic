@@ -6,6 +6,9 @@ import Registro from "./componentes/registro";
 import Contactanos from "./componentes/contacto";
 import Usuarios from "./componentes/usuarios"; // 👈 nuevo componente
 
+
+
+
 export default function App() {
   return (
     <Routes>

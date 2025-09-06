@@ -32,7 +32,6 @@ export default function Home() {
           <li>
             <Link to="/sobrenosotros">SOBRE NOSOTROS</Link>
           </li>
-
           {/* Dropdown Servicios */}
           <li
             className="relative cursor-pointer"
@@ -56,15 +55,17 @@ export default function Home() {
               </ul>
             )}
           </li>
-
           <li>
             <Link to="/contacto">CONTACTANOS</Link>
           </li>
           <li>
             <Link to="/login">LOGIN</Link>
           </li>
-           <li>
+          <li>
             <Link to="/registro">REGISTRATE</Link>
+          </li>
+          <li>
+            <Link to="/usuarios">Ver usuarios</Link>
           </li>
         </ul>
       </nav>
@@ -105,7 +106,6 @@ export default function Home() {
           <p className="text-sm text-center md:text-left">
             © 2025 Optialmologic Clinic. Todos los derechos reservados.
           </p>
-
           <div className="flex gap-6 text-sm">
             <a href="#" className="hover:underline">
               Política de Privacidad
