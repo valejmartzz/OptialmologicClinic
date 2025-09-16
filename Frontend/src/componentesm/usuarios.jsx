@@ -29,10 +29,7 @@ export default function Usuarios() {
             <Calendar size={25} /> Citas
           </NavLink>
           <NavLink to="/usuarios" className="flex items-center gap-2 text-white hover:text-cyan-300">
-            <User size={25} /> Usuarios
-          </NavLink>
-          <NavLink to="/ajustes" className="flex items-center gap-2 text-white hover:text-cyan-300">
-            <Settings size={25} /> Ajustes
+            <User size={25} /> Pacientes
           </NavLink>
         </nav>
 
@@ -40,7 +37,7 @@ export default function Usuarios() {
         <div className="p-6 border-t border-white/20">
           <button
             onClick={() => {
-              window.location.href = "./componentes/home";
+              window.location.href = "/home";
             }}
             className="flex items-center gap-2 w-full text-white hover:text-red-400"
           >
@@ -51,7 +48,7 @@ export default function Usuarios() {
 
       {/* CONTENIDO */}
       <main className="flex-1 p-10 text-gray-800">
-        <h2 className="text-2xl font-semibold mb-6">👥 Gestión de Usuarios</h2>
+        <h2 className="text-2xl font-semibold mb-6">👥 Gestión de Pacientes</h2>
 
         <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
           <table className="min-w-full text-sm text-left border-collapse">
@@ -60,7 +57,6 @@ export default function Usuarios() {
                 <th className="px-6 py-3 border-b">ID</th>
                 <th className="px-6 py-3 border-b">Nombre</th>
                 <th className="px-6 py-3 border-b">Correo</th>
-                <th className="px-6 py-3 border-b">Rol</th>
                 <th className="px-6 py-3 border-b">Estado</th>
               </tr>
             </thead>
@@ -70,7 +66,6 @@ export default function Usuarios() {
                   <td className="px-6 py-3 border-b">{user.id}</td>
                   <td className="px-6 py-3 border-b">{user.nombre}</td>
                   <td className="px-6 py-3 border-b">{user.correo}</td>
-                  <td className="px-6 py-3 border-b">{user.rol}</td>
                   <td className="px-6 py-3 border-b">{user.estado}</td>
                 </tr>
               ))}
