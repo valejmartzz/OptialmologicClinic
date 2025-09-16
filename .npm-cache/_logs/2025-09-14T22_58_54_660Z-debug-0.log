@@ -1,0 +1,28 @@
+0 verbose cli D:\Program Files\nodejs\node.exe D:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.3
+2 info using node@v22.19.0
+3 silly config load:file:D:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\aliso\.npmrc
+5 silly config load:file:C:\Users\aliso\AppData\Roaming\npm\etc\npmrc
+6 verbose title npm config set tmp D:.npm-tmp
+7 verbose argv "config" "set" "tmp" "D:.npm-tmp" "--global"
+8 verbose logfile logs-max:10 dir:D:\Valery\ProyectoOC\.npm-cache\_logs\2025-09-14T22_58_54_660Z-
+9 verbose logfile D:\Valery\ProyectoOC\.npm-cache\_logs\2025-09-14T22_58_54_660Z-debug-0.log
+10 info config set "tmp" "D:.npm-tmp"
+11 silly logfile done cleaning log files
+12 verbose stack Error: `tmp` is not a valid npm option
+12 verbose stack     at Config.set (D:\Program Files\nodejs\node_modules\npm\lib\commands\config.js:186:15)
+12 verbose stack     at Config.exec (D:\Program Files\nodejs\node_modules\npm\lib\commands\config.js:151:20)
+12 verbose stack     at D:\Program Files\nodejs\node_modules\npm\lib\npm.js:255:63
+12 verbose stack     at Object.start (D:\Program Files\nodejs\node_modules\npm\node_modules\proc-log\lib\index.js:101:21)
+12 verbose stack     at #exec (D:\Program Files\nodejs\node_modules\npm\lib\npm.js:254:17)
+12 verbose stack     at Npm.exec (D:\Program Files\nodejs\node_modules\npm\lib\npm.js:207:25)
+12 verbose stack     at module.exports (D:\Program Files\nodejs\node_modules\npm\lib\cli\entry.js:65:29)
+13 error `tmp` is not a valid npm option
+14 verbose cwd D:\Valery\ProyectoOC
+15 verbose os Windows_NT 10.0.22631
+16 verbose node v22.19.0
+17 verbose npm  v10.9.3
+18 verbose exit 1
+19 verbose code 1
+20 error A complete log of this run can be found in: D:\Valery\ProyectoOC\.npm-cache\_logs\2025-09-14T22_58_54_660Z-debug-0.log
