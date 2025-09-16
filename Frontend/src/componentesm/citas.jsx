@@ -4,18 +4,21 @@ import { Home, Calendar, User, LogOut } from "lucide-react";
 
 export default function Citas() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [tipoAccion, setTipoAccion] = useState(""); // "Receta" | "Diagnóstico"
+  const [tipoAccion, setTipoAccion] = useState("");
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
   const [formData, setFormData] = useState({ titulo: "", descripcion: "" });
-
   const [accionesGuardadas, setAccionesGuardadas] = useState({});
   const [modalVerOpen, setModalVerOpen] = useState(false);
 
-  const citas = [
+  // Estado de las citas
+  const [citas, setCitas] = useState([
     { id_cita: 1, fecha: "2025-09-15", hora: "10:30 AM", motivo: "Consulta general", estado: "Pendiente", id_paciente: "P001" },
     { id_cita: 2, fecha: "2025-09-16", hora: "02:00 PM", motivo: "Control de visión", estado: "Completada", id_paciente: "P002" },
     { id_cita: 3, fecha: "2025-09-17", hora: "09:00 AM", motivo: "Examen de retina", estado: "Cancelada", id_paciente: "P003" },
-  ];
+  ]);
+
+  // 👉 Nuevo filtro de estado (select superior)
+  const [filtroEstado, setFiltroEstado] = useState("Todos");
 
   const abrirModal = (cita, accion) => {
     setCitaSeleccionada(cita);
@@ -23,7 +26,6 @@ export default function Citas() {
     setFormData({ titulo: "", descripcion: "" });
     setModalOpen(true);
   };
-
   const cerrarModal = () => setModalOpen(false);
 
   const handleChange = (e) => {
@@ -39,6 +41,7 @@ export default function Citas() {
         tipoAccion === "Receta"
           ? { ...prevAcciones, recetas: [...prevAcciones.recetas, { ...formData }] }
           : { ...prevAcciones, diagnosticos: [...prevAcciones.diagnosticos, { ...formData }] };
+
       return { ...prev, [citaSeleccionada.id_cita]: nuevaAccion };
     });
     cerrarModal();
@@ -49,6 +52,19 @@ export default function Citas() {
     setModalVerOpen(true);
   };
   const cerrarVerModal = () => setModalVerOpen(false);
+
+  const cambiarEstado = (id, nuevoEstado) => {
+    setCitas((prev) =>
+      prev.map((c) =>
+        c.id_cita === id ? { ...c, estado: nuevoEstado } : c
+      )
+    );
+  };
+
+  // 👉 Filtrar las citas según el select superior
+  const citasFiltradas = citas.filter(c =>
+    filtroEstado === "Todos" ? true : c.estado === filtroEstado
+  );
 
   return (
     <div className="flex min-h-screen" style={{ backgroundColor: "#E3F2FD" }}>
@@ -74,6 +90,22 @@ export default function Citas() {
       {/* CONTENIDO */}
       <main className="flex-1 p-10 text-gray-800">
         <h2 className="text-2xl font-semibold mb-6">📅 Gestión de Citas</h2>
+
+        {/* 👉 Nuevo select de filtro de estado */}
+        <div className="mb-4 flex items-center gap-2">
+          <label className="font-medium text-gray-700">Estado:</label>
+          <select
+            value={filtroEstado}
+            onChange={(e) => setFiltroEstado(e.target.value)}
+            className="border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-cyan-300"
+          >
+            <option value="Todos">Todos</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Completada">Completada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+
         <div className="overflow-x-auto shadow-lg rounded-lg">
           <table className="w-full text-left border-collapse bg-white">
             <thead>
@@ -85,24 +117,37 @@ export default function Citas() {
                 <th className="px-6 py-3">Estado</th>
                 <th className="px-6 py-3">ID Paciente</th>
                 <th className="px-6 py-3">Acciones</th>
-                {/* 🆕 Nueva columna para Ver Detalles */}
-                <th className="px-6 py-3">Ver Detalles</th>
               </tr>
             </thead>
             <tbody>
-              {citas.map((cita) => (
+              {citasFiltradas.map((cita) => (
                 <tr key={cita.id_cita} className="border-b hover:bg-gray-100">
                   <td className="px-6 py-3">{cita.id_cita}</td>
                   <td className="px-6 py-3">{cita.fecha}</td>
                   <td className="px-6 py-3">{cita.hora}</td>
                   <td className="px-6 py-3">{cita.motivo}</td>
-                  <td className={`px-6 py-3 font-semibold ${
-                      cita.estado === "Pendiente" ? "text-yellow-600" :
-                      cita.estado === "Completada" ? "text-green-600" : "text-red-600"}`}>
-                    {cita.estado}
+
+                  {/* Select para cambiar estado de la fila */}
+                  <td className="px-6 py-3">
+                    <select
+                      value={cita.estado}
+                      onChange={(e) => cambiarEstado(cita.id_cita, e.target.value)}
+                      className={`border rounded-md px-2 py-1 focus:outline-none ${
+                        cita.estado === "Pendiente"
+                          ? "text-yellow-700"
+                          : cita.estado === "Completada"
+                          ? "text-green-700"
+                          : "text-red-700"
+                      }`}
+                    >
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="Completada">Completada</option>
+                      <option value="Cancelada">Cancelada</option>
+                    </select>
                   </td>
+
                   <td className="px-6 py-3">{cita.id_paciente}</td>
-                  {/* Acciones existentes */}
+
                   <td className="px-6 py-3 space-x-2">
                     <button
                       onClick={() => abrirModal(cita, "Receta")}
@@ -116,9 +161,6 @@ export default function Citas() {
                     >
                       Agregar Diagnóstico
                     </button>
-                  </td>
-                  {/* 🆕 Celda independiente para Ver Detalles */}
-                  <td className="px-6 py-3">
                     <button
                       onClick={() => abrirVerModal(cita)}
                       className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-md text-sm shadow"
@@ -133,7 +175,7 @@ export default function Citas() {
         </div>
       </main>
 
-      {/* MODAL AGREGAR */}
+      {/* MODALES (sin cambios) */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
@@ -173,7 +215,6 @@ export default function Citas() {
         </div>
       )}
 
-      {/* MODAL VER DETALLES */}
       {modalVerOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
