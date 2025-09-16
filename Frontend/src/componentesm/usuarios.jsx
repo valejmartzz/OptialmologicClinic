@@ -37,7 +37,7 @@ export default function Usuarios() {
         <div className="p-6 border-t border-white/20">
           <button
             onClick={() => {
-              window.location.href = "/home";
+              window.location.href = "./componentes/home";
             }}
             className="flex items-center gap-2 w-full text-white hover:text-red-400"
           >
