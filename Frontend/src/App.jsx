@@ -8,7 +8,8 @@ import HomeM from "./componentesm/homem";
 import Citas from "./componentesm/citas"
 import Usuarios from "./componentesm/usuarios";
 import Ajustes from "./componentesm/ajustes";
-import PrivacyPolicy from "./componentes/politicaprivacidad"
+import PrivacyPolicy from "./componentes/politicaprivacidad";
+import TermsConditions from "./componentes/terminosycondiciones";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
       <Route path="/usuarios" element={<Usuarios />} />
       <Route path="/ajustes" element={<Ajustes />} />
       <Route path="/politicaprivacidad" element={<PrivacyPolicy />} />
+      <Route path="/terminosycondiciones" element={<TermsConditions />} />
     </Routes>
   );
 }

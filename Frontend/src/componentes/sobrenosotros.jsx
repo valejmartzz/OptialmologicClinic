@@ -45,13 +45,14 @@ export default function SobreNosotros() {
             {openDropdown && (
               <ul className="absolute top-8 left-0 bg-white shadow-md rounded-lg w-48">
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  AGENDAR CITA
+                  <Link to="/login" className="block w-full h-full">
+                    AGENDAR CITA
+                  </Link>
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  AGENDAR CIRUGIA
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Servicio 3
+                  <Link to="/login" className="block w-full h-full">
+                    AGENDAR CIRUGÍA
+                  </Link>
                 </li>
               </ul>
             )}
@@ -118,10 +119,10 @@ export default function SobreNosotros() {
           </p>
 
           <div className="flex gap-6 text-sm">
-            <a href="#" className="hover:underline">
+            <a href="politicaprivacidad" className="hover:underline">
               Política de Privacidad
             </a>
-            <a href="#" className="hover:underline">
+            <a href="terminosycondiciones" className="hover:underline">
               Términos y Condiciones
             </a>
           </div>

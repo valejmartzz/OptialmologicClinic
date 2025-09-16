@@ -174,8 +174,8 @@ export default function Registro() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm">© 2025 Optialmologic Clinic. Todos los derechos reservados.</p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="hover:underline">Política de Privacidad</a>
-            <a href="#" className="hover:underline">Términos y Condiciones</a>
+            <a href="politicaprivacidad" className="hover:underline">Política de Privacidad</a>
+            <a href="terminosycondiciones" className="hover:underline">Términos y Condiciones</a>
           </div>
         </div>
       </footer>

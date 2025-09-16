@@ -45,22 +45,22 @@ export default function Contactanos() {
   };
 
   return (
-    <div
+     <div
       className="text-gray-900 min-h-screen flex flex-col justify-between"
       style={{ backgroundColor: "#E3F2FD" }}
     >
       {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-6 py-4 shadow-md bg-white">
+      <nav className="flex items-center justify-between px-6 py-4 shadow-md">
+        {/* Logo */}
         <div className="flex items-center">
-          <Link to="/">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="w-20 h-20 rounded-full object-cover cursor-pointer"
-            />
-          </Link>
+          <img
+            src="/logo.png"
+            alt="Logo"
+            className="w-25 h-25 rounded-full object-cover"
+          />
         </div>
 
+        {/* Menú */}
         <ul
           className="flex space-x-8 text-lg font-medium"
           style={{ color: "#004AAD" }}
@@ -71,14 +71,40 @@ export default function Contactanos() {
           <li>
             <Link to="/sobrenosotros">SOBRE NOSOTROS</Link>
           </li>
-          <li>
+
+          {/* Dropdown Servicios */}
+          <li
+            className="relative cursor-pointer"
+            onMouseEnter={() => setOpenDropdown(true)}
+            onMouseLeave={() => setOpenDropdown(false)}
+          >
+            <div className="flex items-center">
+              SERVICIOS <ChevronDown size={18} className="ml-1" />
+            </div>
+            {openDropdown && (
+              <ul className="absolute top-8 left-0 bg-white shadow-md rounded-lg w-48">
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <Link to="/login" className="block w-full h-full">
+                    AGENDAR CITA
+                  </Link>
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <Link to="/login" className="block w-full h-full">
+                    AGENDAR CIRUGÍA
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+           <li>
             <Link to="/contacto">CONTACTANOS</Link>
           </li>
           <li>
             <Link to="/login">LOGIN</Link>
           </li>
-          <li>
-            <Link to="/registro">REGÍSTRATE</Link>
+           <li>
+            <Link to="/registro">REGISTRATE</Link>
           </li>
         </ul>
       </nav>
@@ -198,10 +224,10 @@ export default function Contactanos() {
             © 2025 Optialmologic Clinic. Todos los derechos reservados.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="hover:underline">
+            <a href="politicaprivacidad" className="hover:underline">
               Política de Privacidad
             </a>
-            <a href="#" className="hover:underline">
+            <a href="terminosycondiciones" className="hover:underline">
               Términos y Condiciones
             </a>
           </div>

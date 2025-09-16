@@ -43,17 +43,18 @@ export default function Home() {
               SERVICIOS <ChevronDown size={18} className="ml-1" />
             </div>
             {openDropdown && (
-              <ul className="absolute top-8 left-0 bg-white shadow-md rounded-lg w-48">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+            <ul className="absolute top-8 left-0 bg-white shadow-md rounded-lg w-48">
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                <Link to="/login" className="block w-full h-full">
                   AGENDAR CITA
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  AGENDAR CIRUGIA
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Servicio 3
-                </li>
-              </ul>
+                </Link>
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                <Link to="/login" className="block w-full h-full">
+                  AGENDAR CIRUGÍA
+                </Link>
+              </li>
+            </ul>
             )}
           </li>
 
@@ -88,14 +89,16 @@ export default function Home() {
             Tu bienestar visual es nuestra prioridad.
           </p>
 
-          <button
-            className="rounded-xl bg-[#1A73E8] px-6 py-3 text-white font-semibold shadow-lg transition 
-                       hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/50 
-                       focus:ring-offset-2 focus:ring-offset-light cursor-pointer"
-            aria-label="Agendar cita"
-          >
-            Agendar cita
-          </button>
+          <Link to="/login">
+            <button
+              className="rounded-xl bg-[#1A73E8] px-6 py-3 text-white font-semibold shadow-lg transition
+                        hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/50
+                        focus:ring-offset-2 focus:ring-offset-light cursor-pointer"
+              aria-label="Agendar cita"
+            >
+              Agendar cita
+            </button>
+          </Link>
         </div>
       </main>
 
@@ -107,10 +110,10 @@ export default function Home() {
           </p>
 
           <div className="flex gap-6 text-sm">
-            <a href="#" className="hover:underline">
+            <a href="politicaprivacidad" className="hover:underline">
               Política de Privacidad
             </a>
-            <a href="#" className="hover:underline">
+            <a href="/terminosycondiciones" className="hover:underline">
               Términos y Condiciones
             </a>
           </div>

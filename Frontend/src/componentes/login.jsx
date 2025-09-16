@@ -118,13 +118,11 @@ export default function Login() {
               Iniciar Sesión
             </button>
           </form>
-
-          {/* ENLACES EXTRA */}
           <div className="text-center text-sm text-gray-700 mt-6 space-y-2">
             <p>
               ¿No tienes cuenta?{" "}
               <Link
-                to="/register"
+                to="/registro"
                 className="text-[#1A73E8] font-semibold hover:underline"
               >
                 Regístrate aquí
@@ -139,7 +137,7 @@ export default function Login() {
               </Link>{" "}
               |{" "}
               <Link
-                to="/terms-conditions"
+                to="/terminosycondiciones"
                 className="text-[#1A73E8] hover:underline"
               >
                 Términos y Condiciones
