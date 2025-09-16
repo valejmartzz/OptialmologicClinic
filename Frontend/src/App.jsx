@@ -10,6 +10,7 @@ import Usuarios from "./componentesm/usuarios";
 import Ajustes from "./componentesm/ajustes";
 import PrivacyPolicy from "./componentes/politicaprivacidad";
 import TermsConditions from "./componentes/terminosycondiciones";
+import RecuperarContrasena from "./componentes/recuperar"
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/ajustes" element={<Ajustes />} />
       <Route path="/politicaprivacidad" element={<PrivacyPolicy />} />
       <Route path="/terminosycondiciones" element={<TermsConditions />} />
+      <Route path="/recuperar" element={<RecuperarContrasena />} />
     </Routes>
   );
 }
