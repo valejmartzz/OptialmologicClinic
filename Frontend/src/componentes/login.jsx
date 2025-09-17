@@ -117,7 +117,18 @@ export default function Login() {
             >
               Iniciar Sesión
             </button>
+
+            {/* NUEVO: Enlace para recuperar contraseña */}
+            <div className="text-center mt-4">
+              <Link
+                to="/recuperar"
+                className="text-sm text-[#1A73E8] font-medium hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
           </form>
+
           <div className="text-center text-sm text-gray-700 mt-6 space-y-2">
             <p>
               ¿No tienes cuenta?{" "}
