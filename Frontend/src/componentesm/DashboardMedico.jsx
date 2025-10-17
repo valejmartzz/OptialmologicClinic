@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Calendar, Users, Clock, Eye, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { medicoService } from "../services/medicoService";
+import { medicoService } from '../services/medicoService.js'
 
 export default function DashboardMedico() {
   const [medicoData, setMedicoData] = useState({

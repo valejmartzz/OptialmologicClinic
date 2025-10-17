@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiService } from "../services/api";
+import { authService } from '../services/authService.js';
 
 export default function Registro() {
   const navigate = useNavigate();
@@ -10,22 +10,25 @@ export default function Registro() {
     nombres: "",
     apellidos: "",
     sexo: "",
+    fecha_nacimiento: "",
     tipo_identificacion: "",
     numero_identificacion: "",
     correo: "",
     contrasena: "",
     telefono: "",
-    id_rol: "1", // 1 = Paciente, 2 = Médico, 3 = Admin
+    id_rol: "", // 3 = Paciente, 2 = Médico, 1 = Admin
   });
 
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
     setErrors({ ...errors, [e.target.id]: "" });
     setSuccess("");
+    setError("");
   };
 
   const validate = () => {
@@ -54,42 +57,47 @@ export default function Registro() {
     
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;
-    }
+    } else {
+      try {
+        setLoading(true);
+        setError("");
 
-    setLoading(true);
-    try {
-      // Preparar datos para enviar al backend
-      const usuarioData = {
-        nombres: formData.nombres.trim(),
-        apellidos: formData.apellidos.trim(),
-        sexo: formData.sexo,
-        tipo_identificacion: formData.tipo_identificacion,
-        numero_identificacion: formData.numero_identificacion.trim(),
-        correo: formData.correo.trim(),
-        contrasena: formData.contrasena,
-        telefono: formData.telefono.trim() || null,
-        id_rol: parseInt(formData.id_rol),
-        id_especialidad: null // Por ahora null, se puede agregar después
-      };
+        console.log('Enviando datos:', formData);
 
-      console.log("Enviando datos:", usuarioData);
-      
-      const response = await apiService.registrarUsuario(usuarioData);
-      
-      setSuccess("✅ Registro completado con éxito. Redirigiendo al login...");
-      setErrors({});
-      
-      // Redirigir al login después de 2 segundos
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-      
-    } catch (error) {
-      console.error("Error en registro:", error);
-      setErrors({ general: error.message || "Error en el registro. Intenta nuevamente." });
-    } finally {
-      setLoading(false);
+        // ✅ Usar authService correctamente
+        const response = await authService.register(formData);
+        
+        console.log('Respuesta del backend:', response);
+
+        if (response.success) {
+          setSuccess("✅ Registro completado con éxito.");
+          // Limpiar formulario
+          setFormData({
+            nombres: "",
+            apellidos: "",
+            sexo: "",
+            fecha_nacimiento: "",
+            tipo_identificacion: "",
+            numero_identificacion: "",
+            correo: "",
+            contrasena: "",
+            telefono: "",
+            id_rol: "3",
+          });
+          
+          // Redirigir al login después de 2 segundos
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+        } else {
+          setError(response.message || "Error en el registro");
+        }
+      } catch (error) {
+        console.error('Error en el frontend:', error);
+        setError(error.message || "Error en el registro");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -115,8 +123,8 @@ export default function Registro() {
             <p className="mb-4 text-green-600 font-semibold text-center">{success}</p>
           )}
 
-          {errors.general && (
-            <p className="mb-4 text-red-500 font-semibold text-center">{errors.general}</p>
+          {error && (
+            <p className="mb-4 text-red-500 font-semibold text-center">{error}</p>
           )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -174,6 +182,23 @@ export default function Registro() {
                 {errors.sexo && <p className="text-red-500 text-sm mt-1">{errors.sexo}</p>}
               </div>
 
+              {/* Fecha de Nacimiento */}
+              <div>
+                <label htmlFor="fecha_nacimiento" className="block text-sm font-medium text-gray-700 mb-1">
+                  Fecha de Nacimiento
+                </label>
+                <input
+                  type="date"
+                  id="fecha_nacimiento"
+                  value={formData.fecha_nacimiento}
+                  onChange={handleChange}
+                  max={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Tipo de Identificación */}
               <div>
                 <label htmlFor="tipo_identificacion" className="block text-sm font-medium text-gray-700 mb-1">
@@ -193,22 +218,22 @@ export default function Registro() {
                 </select>
                 {errors.tipo_identificacion && <p className="text-red-500 text-sm mt-1">{errors.tipo_identificacion}</p>}
               </div>
-            </div>
 
-            {/* Número de Identificación */}
-            <div>
-              <label htmlFor="numero_identificacion" className="block text-sm font-medium text-gray-700 mb-1">
-                Número de identificación <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="numero_identificacion"
-                placeholder="Ingresa tu número de identificación"
-                value={formData.numero_identificacion}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              />
-              {errors.numero_identificacion && <p className="text-red-500 text-sm mt-1">{errors.numero_identificacion}</p>}
+              {/* Número de Identificación */}
+              <div>
+                <label htmlFor="numero_identificacion" className="block text-sm font-medium text-gray-700 mb-1">
+                  Número de identificación <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="numero_identificacion"
+                  placeholder="Ingresa tu número de identificación"
+                  value={formData.numero_identificacion}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                />
+                {errors.numero_identificacion && <p className="text-red-500 text-sm mt-1">{errors.numero_identificacion}</p>}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -244,39 +269,37 @@ export default function Registro() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Contraseña */}
-              <div>
-                <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700 mb-1">
-                  Contraseña <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="password"
-                  id="contrasena"
-                  placeholder="Mínimo 6 caracteres"
-                  value={formData.contrasena}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                />
-                {errors.contrasena && <p className="text-red-500 text-sm mt-1">{errors.contrasena}</p>}
-              </div>
+            {/* Contraseña */}
+            <div>
+              <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700 mb-1">
+                Contraseña <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                id="contrasena"
+                placeholder="Mínimo 6 caracteres"
+                value={formData.contrasena}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              />
+              {errors.contrasena && <p className="text-red-500 text-sm mt-1">{errors.contrasena}</p>}
+            </div>
 
-              {/* Rol */}
-              <div>
-                <label htmlFor="id_rol" className="block text-sm font-medium text-gray-700 mb-1">
-                  Tipo de usuario <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="id_rol"
-                  value={formData.id_rol}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                >
-                  <option value="1">Paciente</option>
-                  <option value="2">Médico</option>
-                  <option value="3">Administrador</option>
-                </select>
-              </div>
+            {/* Rol */}
+            <div>
+              <label htmlFor="id_rol" className="block text-sm font-medium text-gray-700 mb-1">
+                Tipo de usuario <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="id_rol"
+                value={formData.id_rol}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              >
+                <option value="3">Paciente</option>
+                <option value="2">Médico</option>
+                <option value="1">Administrador</option>
+              </select>
             </div>
 
             {/* Botón de registro */}

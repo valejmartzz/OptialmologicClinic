@@ -19,13 +19,14 @@ class Usuario(Base):
     nombres = Column(String(100), nullable=False)
     apellidos = Column(String(100), nullable=False)
     sexo = Column(Enum("M", "F", "Otro"), nullable=False)
+    fecha_nacimiento = Column(Date, nullable=False)
     tipo_identificacion = Column(String(20), nullable=False)
     numero_identificacion = Column(String(20), unique=True, nullable=False)
     correo = Column(String(100), unique=True, nullable=False)
     contrasena = Column(String(255), nullable=False)
     telefono = Column(String(20))
     id_rol = Column(Integer, ForeignKey("rol.id_rol"), nullable=False)
-    id_especialidad = Column(Integer, ForeignKey("especialidad.id_especialidad"))
+
 
 class Cita(Base):
     __tablename__ = "cita"
