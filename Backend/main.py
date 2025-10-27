@@ -1,4 +1,4 @@
-# # main.py - VERSIÓN CORREGIDA CON NOMBRES REALES
+
 # from fastapi import FastAPI, Depends
 # from fastapi.middleware.cors import CORSMiddleware
 # from sqlalchemy.orm import Session
@@ -329,12 +329,11 @@ def verificar_token(token: str = None) -> Optional[dict]:
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Token inválido")
 
-# ENDPOINT DE REGISTRO DE PACIENTES
+
+#ENDPOINT REGISTRO
+
 @app.post("/api/auth/registro")
 async def registro_paciente(usuario_data: dict):
-    """
-    Registra un nuevo paciente en el sistema
-    """
     print("🎯 REGISTRO PACIENTE - Datos recibidos:", usuario_data)
     
     conn = get_db_connection()
@@ -355,12 +354,15 @@ async def registro_paciente(usuario_data: dict):
         if cursor.fetchone():
             return {"success": False, "message": "El número de identificación ya existe"}
         
+        # ✅ CORREGIDO: Usar 3 directamente y convertir a entero
+        id_rol = 3  # Siempre paciente
+        
         # Insertar nuevo paciente 
         cursor.execute(
             """
             INSERT INTO usuario 
             (nombres, apellidos, sexo, fecha_nacimiento, tipo_identificacion, numero_identificacion, 
-            correo, contrasena, telefono, id_rol) 
+             correo, contrasena, telefono, id_rol) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
@@ -373,9 +375,9 @@ async def registro_paciente(usuario_data: dict):
                 usuario_data.get('correo'),
                 usuario_data.get('contrasena'),
                 usuario_data.get('telefono'),
-                usuario_data.get('id_rol')  # ← ÚLTIMO VALOR: del frontend
+                id_rol  # ✅ SIEMPRE 3 (paciente)
             )
-        )   
+        )
         
         conn.commit()
         user_id = cursor.lastrowid
@@ -399,59 +401,227 @@ async def registro_paciente(usuario_data: dict):
         if conn:
             conn.close()
 
+
+
+# # ENDPOINT DE LOGIN
+# @app.post("/api/auth/login")
+# async def login(login_data: dict):
+#     """
+#     Inicia sesión en el sistema
+#     """
+#     correo = login_data.get('correo')
+#     contrasena = login_data.get('contrasena')
+    
+#     conn = get_db_connection()
+#     if not conn:
+#         return {"success": False, "message": "Error de conexión a BD"}
+    
+#     try:
+#         cursor = conn.cursor(dictionary=True)
+        
+#         # Buscar usuario
+#         cursor.execute(
+#             "SELECT id_usuario, nombres, apellidos, correo, id_rol FROM usuario WHERE correo = %s AND contrasena = %s",
+#             (correo, contrasena)
+#         )
+#         usuario = cursor.fetchone()
+        
+#         if not usuario:
+#             return {"success": False, "message": "Credenciales incorrectas"}
+        
+#         # Crear token JWT
+#         token_data = {
+#             "sub": usuario['correo'],
+#             "id_usuario": usuario['id_usuario'],
+#             "id_rol": usuario['id_rol'],
+#             "exp": datetime.utcnow() + timedelta(hours=24)
+#         }
+#         token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+        
+#         return {
+#             "success": True,
+#             "token": token,
+#             "usuario": {
+#                 "id": usuario['id_usuario'],
+#                 "nombres": usuario['nombres'],
+#                 "apellidos": usuario['apellidos'],
+#                 "correo": usuario['correo'],
+#                 "id_rol": usuario['id_rol']
+#             }
+#         }
+        
+#     except Exception as e:
+#         print(f"❌ ERROR en login: {e}")
+#         return {"success": False, "message": f"Error: {str(e)}"}
+#     finally:
+#         cursor.close()
+#         conn.close()
+
+
 # ENDPOINT DE LOGIN
+# ENDPOINT DE LOGIN MEJORADO
 @app.post("/api/auth/login")
 async def login(login_data: dict):
     """
-    Inicia sesión en el sistema
+    Inicia sesión en el sistema con validación mejorada
     """
-    correo = login_data.get('correo')
-    contrasena = login_data.get('contrasena')
+    print("🔐 LOGIN - Datos recibidos:", login_data)
+    
+    correo = login_data.get('correo', '').strip()
+    contrasena = login_data.get('contrasena', '').strip()
+    
+    # Validaciones básicas
+    if not correo or not contrasena:
+        return {"success": False, "message": "Correo y contraseña son requeridos"}
     
     conn = get_db_connection()
     if not conn:
-        return {"success": False, "message": "Error de conexión a BD"}
+        return {"success": False, "message": "Error de conexión a la base de datos"}
     
+    cursor = None
     try:
         cursor = conn.cursor(dictionary=True)
         
-        # Buscar usuario
+        # Buscar usuario con más datos para mejor respuesta
         cursor.execute(
-            "SELECT id_usuario, nombres, apellidos, correo, id_rol FROM usuario WHERE correo = %s AND contrasena = %s",
+            """
+            SELECT 
+                id_usuario, 
+                nombres, 
+                apellidos, 
+                correo, 
+                id_rol,
+                telefono,
+                fecha_nacimiento
+            FROM usuario 
+            WHERE correo = %s AND contrasena = %s
+            """,
             (correo, contrasena)
         )
         usuario = cursor.fetchone()
         
         if not usuario:
-            return {"success": False, "message": "Credenciales incorrectas"}
+            print(f"❌ LOGIN FALLIDO para: {correo}")
+            return {"success": False, "message": "Correo o contraseña incorrectos"}
         
-        # Crear token JWT
+        print(f"✅ LOGIN EXITOSO: {usuario['nombres']} {usuario['apellidos']}")
+        
+        # Crear token JWT con más información
         token_data = {
             "sub": usuario['correo'],
             "id_usuario": usuario['id_usuario'],
             "id_rol": usuario['id_rol'],
+            "nombres": usuario['nombres'],
+            "apellidos": usuario['apellidos'],
             "exp": datetime.utcnow() + timedelta(hours=24)
         }
         token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
         
         return {
             "success": True,
+            "message": "Inicio de sesión exitoso",
             "token": token,
             "usuario": {
                 "id": usuario['id_usuario'],
                 "nombres": usuario['nombres'],
                 "apellidos": usuario['apellidos'],
                 "correo": usuario['correo'],
-                "id_rol": usuario['id_rol']
+                "id_rol": usuario['id_rol'],
+                "telefono": usuario['telefono']
             }
         }
         
     except Exception as e:
         print(f"❌ ERROR en login: {e}")
-        return {"success": False, "message": f"Error: {str(e)}"}
+        return {"success": False, "message": f"Error en el servidor: {str(e)}"}
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+
+# ENDPOINT PARA VERIFICAR TOKEN
+@app.post("/api/auth/verify-token")
+async def verify_token(token_data: dict):
+    """
+    Verifica si un token JWT es válido
+    """
+    token = token_data.get('token')
+    
+    if not token:
+        return {"success": False, "message": "Token no proporcionado"}
+    
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        # Verificar en BD que el usuario aún existe
+        conn = get_db_connection()
+        if conn:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute(
+                "SELECT id_usuario, nombres, apellidos, correo, id_rol FROM usuario WHERE id_usuario = %s",
+                (payload['id_usuario'],)
+            )
+            usuario = cursor.fetchone()
+            cursor.close()
+            conn.close()
+            
+            if usuario:
+                return {
+                    "success": True,
+                    "valid": True,
+                    "usuario": usuario
+                }
+        
+        return {"success": True, "valid": False}
+        
+    except jwt.ExpiredSignatureError:
+        return {"success": True, "valid": False, "message": "Token expirado"}
+    except jwt.InvalidTokenError:
+        return {"success": True, "valid": False, "message": "Token inválido"}
+
+
+
+# ENDPOINT PARA OBTENER PERFIL DE USUARIO
+@app.get("/api/auth/perfil")
+async def obtener_perfil(token: str = Depends(verificar_token)):
+    """
+    Obtiene el perfil del usuario autenticado
+    """
+    conn = get_db_connection()
+    if not conn:
+        raise HTTPException(status_code=500, detail="Error de conexión a BD")
+    
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT 
+                id_usuario, nombres, apellidos, correo, id_rol,
+                telefono, fecha_nacimiento, sexo, tipo_identificacion,
+                numero_identificacion, direccion, alergias, antecedentes
+            FROM usuario 
+            WHERE id_usuario = %s
+            """,
+            (token['id_usuario'],)
+        )
+        usuario = cursor.fetchone()
+        
+        if not usuario:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        
+        return {
+            "success": True,
+            "usuario": usuario
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     finally:
         cursor.close()
         conn.close()
+
 
 # ENDPOINTS BÁSICOS
 @app.get("/")

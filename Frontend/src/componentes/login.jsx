@@ -1,15 +1,17 @@
-import { useState } from "react";
-import { MessageCircle } from "lucide-react";
-import { Link } from "react-router-dom";
-import { authService } from '../services/authService.js'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MessageCircle } from 'lucide-react';
+
 
 export default function Login() {
   const [formData, setFormData] = useState({
     correo: "",
-    contraseña: "",
+    contraseña: "", // Nota: En el backend es "contrasena" (sin ñ)
   });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -26,19 +28,71 @@ export default function Login() {
     }
     if (!formData.contraseña) {
       newErrors.contraseña = "La contraseña es obligatoria.";
+    } else if (formData.contraseña.length < 6) {
+      newErrors.contraseña = "La contraseña debe tener al menos 6 caracteres.";
     }
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
+    
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-    } else {
-      setErrors({});
-      setSuccess("✅ Inicio de sesión exitoso.");
-      setFormData({ correo: "", contraseña: "" });
+      return;
+    }
+
+    setLoading(true);
+    setErrors({});
+
+    try {
+      // 🔥 CONEXIÓN CON EL BACKEND
+      const response = await fetch('http://localhost:8000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          correo: formData.correo,
+          contrasena: formData.contraseña // ⚠️ Cambiar "contraseña" a "contrasena"
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess("✅ Inicio de sesión exitoso.");
+        
+        // Guardar token y datos de usuario
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.usuario));
+        
+        // Redirigir según el rol después de 1 segundo
+        setTimeout(() => {
+          switch(data.usuario.id_rol) {
+            case 1: // Admin
+              navigate('/admin');
+              break;
+            case 2: // Médico
+              navigate('/medico');
+              break;
+            case 3: // Paciente
+              navigate('/paciente');
+              break;
+            default:
+              navigate('/');
+          }
+        }, 1000);
+        
+      } else {
+        setErrors({ general: data.message || "Error en el servidor" });
+      }
+    } catch (error) {
+      console.error('Error en login:', error);
+      setErrors({ general: "Error de conexión con el servidor" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,6 +119,13 @@ export default function Login() {
             Iniciar Sesión
           </h2>
 
+          {/* Mensaje de error general */}
+          {errors.general && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center">
+              {errors.general}
+            </div>
+          )}
+
           {success && (
             <p className="mb-4 text-green-600 font-semibold text-center">
               {success}
@@ -86,6 +147,7 @@ export default function Login() {
                 value={formData.correo}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                disabled={loading}
               />
               {errors.correo && (
                 <p className="text-red-500 text-sm mt-1">{errors.correo}</p>
@@ -106,6 +168,7 @@ export default function Login() {
                 value={formData.contraseña}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                disabled={loading}
               />
               {errors.contraseña && (
                 <p className="text-red-500 text-sm mt-1">{errors.contraseña}</p>
@@ -114,12 +177,16 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full bg-[#1A73E8] text-white py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition"
+              disabled={loading}
+              className={`w-full py-2 px-4 rounded-lg font-semibold shadow-md transition ${
+                loading 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-[#1A73E8] hover:bg-blue-600 text-white'
+              }`}
             >
-              Iniciar Sesión
+              {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
             </button>
 
-            {/* NUEVO: Enlace para recuperar contraseña */}
             <div className="text-center mt-4">
               <Link
                 to="/recuperar"
