@@ -9,6 +9,14 @@ import PrivacyPolicy from "./componentes/politicaprivacidad";
 import TermsConditions from "./componentes/terminosycondiciones";
 import RecuperarContrasena from "./componentes/recuperar";
 
+
+// componentes paciente Ophtialmolgy Clinic
+import Homep from "./componentesp/Homep";
+import PerfilPaciente from "./componentesp/perfil"
+import EditarPerfil from "./componentesp/editarperfil"
+import VerHistorialMedico from "./componentesp/hmedico"
+import EliminarCitas from "./componentesp/eliminarcita"
+
 // Componentes médico
 import LayoutMedico from "./componentesm/LayoutMedico";
 import DashboardMedico from "./componentesm/DashboardMedico";
@@ -16,6 +24,10 @@ import CitasMedico from "./componentesm/citas";
 import PacientesMedico from "./componentesm/pacientes";
 import HistorialMedico from "./componentesm/historial";
 import AjustesMedico from "./componentesm/ajustes";
+import { ImagePlay, Import } from "lucide-react";
+
+// Administrador 
+import AdminLayout from "./componentesad/AdminLayout"
 
 // Componente de ruta protegida
 const ProtectedRoute = ({ children }) => {
@@ -73,6 +85,15 @@ function AppRoutes() {
       <Route path="/politicaprivacidad" element={<PrivacyPolicy />} />
       <Route path="/terminosycondiciones" element={<TermsConditions />} />
       <Route path="/recuperar" element={<RecuperarContrasena />} />
+   {/* PACIENTE */}
+      <Route path="/Homep" element={<Homep />} />
+      <Route path="/perfil" element={<PerfilPaciente />} />
+      <Route path="/editarperfil" element={<EditarPerfil />} />
+      <Route path="/hmedico" element={<VerHistorialMedico />} />
+      <Route path="/eliminarcita" element={<EliminarCitas />} />
+    {/* ADMINISTRADOR */}  
+      <Route path="/AdminLayout" element={<AdminLayout />} />
+
 
       {/* Rutas PROTEGIDAS del MÉDICO */}
       <Route path="/medico" element={
