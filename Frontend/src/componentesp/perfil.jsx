@@ -12,6 +12,9 @@ export default function PerfilPaciente() {
     direccion: "",
   });
 
+
+
+  
   const [resumenCitas, setResumenCitas] = useState({
     total: 0,
     pendientes: 0,

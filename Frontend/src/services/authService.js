@@ -96,12 +96,29 @@ export const authService = {
   },
 
   /**
-   * Cierra la sesión del usuario
+   * Cierra la sesión del usuario - VERSIÓN CORREGIDA
    */
-  logout() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
-    console.log('🔐 Sesión cerrada - tokens eliminados');
+  async logout() {
+    console.log('🔵 FRONTEND - Iniciando logout...');
+    
+    try {
+      // Intentar logout en el backend
+      await api.post('/api/auth/logout');
+      console.log('🟢 Logout exitoso en backend');
+    } catch (error) {
+      console.log('⚠️  Logout en backend falló, pero continuamos...', error);
+      // Continuamos aunque falle el logout del backend
+    } finally {
+      // SIEMPRE limpiar el localStorage y redirigir
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('userRole');
+      console.log('🔐 Tokens eliminados del localStorage');
+      
+      // Redirigir al login
+      console.log('🔄 Redirigiendo a login...');
+      window.location.href = '/login';
+    }
   },
 
   /**

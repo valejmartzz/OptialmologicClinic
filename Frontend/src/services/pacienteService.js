@@ -1,33 +1,36 @@
-import { api } from './api.js';
+import { api } from './api';
 
 export const pacienteService = {
-  // Obtener perfil del paciente
-  async getPerfil() {
-    return await api.get('/api/pacientes/perfil');
+  // Obtener datos del paciente actual
+  async getMiPerfil() {
+    try {
+      const data = await api.get('/pacientes/mi-perfil');
+      return data;
+    } catch (error) {
+      console.error('Error en getMiPerfil:', error);
+      throw error;
+    }
   },
 
-  // Obtener citas del paciente
-  async getCitas() {
-    return await api.get('/api/pacientes/citas');
+  // Actualizar perfil del paciente
+  async updateMiPerfil(pacienteData) {
+    try {
+      const data = await api.put('/pacientes/mi-perfil', pacienteData);
+      return data;
+    } catch (error) {
+      console.error('Error en updateMiPerfil:', error);
+      throw error;
+    }
   },
 
-  // Agendar nueva cita
-  async agendarCita(citaData) {
-    return await api.post('/api/pacientes/citas', citaData);
-  },
-
-  // Cancelar cita
-  async cancelarCita(citaId) {
-    return await api.put(`/api/pacientes/citas/${citaId}/cancelar`);
-  },
-
-  // Obtener historial médico
-  async getHistorial() {
-    return await api.get('/api/pacientes/historial');
-  },
-
-  // Obtener recetas
-  async getRecetas() {
-    return await api.get('/api/pacientes/recetas');
-  },
+  // Obtener estadísticas del paciente
+  async getEstadisticas() {
+    try {
+      const data = await api.get('/pacientes/estadisticas');
+      return data;
+    } catch (error) {
+      console.error('Error en getEstadisticas:', error);
+      throw error;
+    }
+  }
 };
