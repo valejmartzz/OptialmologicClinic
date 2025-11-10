@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -18,20 +17,24 @@ export const AuthProvider = ({ children }) => {
   // Verificar si hay usuario en localStorage al cargar
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    const token = localStorage.getItem('authToken');
+    
+    if (storedUser && token) {
       setUser(JSON.parse(storedUser));
     }
     setLoading(false);
   }, []);
 
-  const login = (userData) => {
+  const login = (userData, token) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('authToken', token);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
   };
 
   const value = {
@@ -40,9 +43,9 @@ export const AuthProvider = ({ children }) => {
     logout,
     loading,
     isAuthenticated: !!user,
-    isPaciente: user?.id_rol === 1,
-    isMedico: user?.id_rol === 2,
-    isAdmin: user?.id_rol === 3
+    isAdmin: user?.id_rol === 1,      // ✅ Corregido
+    isMedico: user?.id_rol === 2,     // ✅ Correcto
+    isPaciente: user?.id_rol === 3    // ✅ Corregido
   };
 
   return (

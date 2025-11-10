@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Calendar, Search, Filter, Eye, Edit, X, Check } from "lucide-react";
 
+
+
 export default function CitasMedico() {
   const [citas, setCitas] = useState([]);
   const [filtro, setFiltro] = useState('todas');

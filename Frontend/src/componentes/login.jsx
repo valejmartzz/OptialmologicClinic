@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
-
+import { useAuth } from '../context/AuthContext'; // ✅ IMPORTAR useAuth
 
 export default function Login() {
   const [formData, setFormData] = useState({
     correo: "",
-    contraseña: "", // Nota: En el backend es "contrasena" (sin ñ)
+    contraseña: "",
   });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ OBTENER LA FUNCIÓN LOGIN DEL CONTEXTO
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -55,7 +56,7 @@ export default function Login() {
         },
         body: JSON.stringify({
           correo: formData.correo,
-          contrasena: formData.contraseña // ⚠️ Cambiar "contraseña" a "contrasena"
+          contrasena: formData.contraseña
         })
       });
 
@@ -64,26 +65,27 @@ export default function Login() {
       if (data.success) {
         setSuccess("✅ Inicio de sesión exitoso.");
         
-        // Guardar token y datos de usuario
-        localStorage.setItem('token', data.token);
+        // ✅ GUARDAR TOKEN Y DATOS CORRECTAMENTE
+        localStorage.setItem('authToken', data.token); // ✅ Cambiar 'token' por 'authToken'
         localStorage.setItem('user', JSON.stringify(data.usuario));
         
-        // Redirigir según el rol después de 1 segundo
-        setTimeout(() => {
-          switch(data.usuario.id_rol) {
-            case 1: // Admin
-              navigate('/admin');
-              break;
-            case 2: // Médico
-              navigate('/medico');
-              break;
-            case 3: // Paciente
-              navigate('/paciente');
-              break;
-            default:
-              navigate('/');
-          }
-        }, 1000);
+        // ✅ ACTUALIZAR EL CONTEXTO DE AUTENTICACIÓN
+        login(data.usuario, data.token);
+        
+        // ✅ REDIRIGIR SEGÚN EL ROL - SIN TIMEOUT
+        switch(data.usuario.id_rol) {
+          case 1: // Admin
+            navigate('/admin');
+            break;
+          case 2: // Médico
+            navigate('/medico');
+            break;
+          case 3: // Paciente
+            navigate('/paciente');
+            break;
+          default:
+            navigate('/');
+        }
         
       } else {
         setErrors({ general: data.message || "Error en el servidor" });

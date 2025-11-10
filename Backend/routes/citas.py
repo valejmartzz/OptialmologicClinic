@@ -5,9 +5,85 @@ import models, schemas
 
 router = APIRouter(prefix="/citas", tags=["Citas"])
 
+@router.put("/citas/{cita_id}")
+async def actualizar_estado_cita(cita_id: int, datos_actualizacion: dict):
+    """
+    Actualiza el estado de una cita
+    """
+    conn = get_db_connection()
+    if not conn:
+        raise HTTPException(status_code=500, detail="Error de conexión a la base de datos")
+    
+    try:
+        cursor = conn.cursor()
+        
+        # Verificar que la cita existe
+        cursor.execute("SELECT id_cita FROM cita WHERE id_cita = %s", (cita_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Cita no encontrada")
+        
+        # Actualizar estado
+        cursor.execute(
+            "UPDATE cita SET estado = %s WHERE id_cita = %s",
+            (datos_actualizacion.get('estado'), cita_id)
+        )
+        
+        conn.commit()
+        
+        return {
+            "success": True,
+            "message": "Estado de cita actualizado correctamente"
+        }
+        
+    except mysql.connector.Error as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
 @router.get("/", response_model=list[schemas.CitaOut])
 def listar(db: Session = Depends(get_db)):
     return db.query(models.Cita).all()
+
+
+@router.put("/citas/{cita_id}")
+async def actualizar_estado_cita(cita_id: int, datos_actualizacion: dict):
+    """
+    Actualiza el estado de una cita
+    """
+    conn = get_db_connection()
+    if not conn:
+        raise HTTPException(status_code=500, detail="Error de conexión a la base de datos")
+    
+    try:
+        cursor = conn.cursor()
+        
+        # Verificar que la cita existe
+        cursor.execute("SELECT id_cita FROM cita WHERE id_cita = %s", (cita_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Cita no encontrada")
+        
+        # Actualizar estado
+        cursor.execute(
+            "UPDATE cita SET estado = %s WHERE id_cita = %s",
+            (datos_actualizacion.get('estado'), cita_id)
+        )
+        
+        conn.commit()
+        
+        return {
+            "success": True,
+            "message": "Estado de cita actualizado correctamente"
+        }
+        
+    except mysql.connector.Error as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error de base de datos: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
 
 @router.get("/{id}", response_model=schemas.CitaOut)
 def obtener(id: int, db: Session = Depends(get_db)):
